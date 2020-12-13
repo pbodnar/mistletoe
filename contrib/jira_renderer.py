@@ -82,13 +82,13 @@ class JIRARenderer(BaseRenderer):
     def render_raw_text(self, token, escape=True):
         if escape:
             def repl(match):
-                return '\\' + (match.group(1) or match.group(3) or match.group(5))
-            # The following regex tries to find special that are one of the following:
+                return '\\' + match.group(0)
+            # The following regex tries to find special chars that are one of the following:
             # 1. the whole string (typically in an EscapeSequence)
             # 2. just after a non-whitespace
             # 3. just before a non-whitespace
             re_esc_chars = r'[{}\[\]\-*_+^~]'
-            re_find = r'(^' + re_esc_chars + r'$)|((?<=\S)(' + re_esc_chars + r'))|((' + re_esc_chars + r')(?=\S))'
+            re_find = r'(^{esc_chars}$)|((?<=\S)({esc_chars}))|(({esc_chars})(?=\S))'.format(esc_chars=re_esc_chars)
             return re.sub(re_find, repl, token.content)
         else:
             return token.content
